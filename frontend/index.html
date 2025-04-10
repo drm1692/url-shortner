@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+        rel="stylesheet">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "DM Sans", sans-serif;
+        }
+
+        main {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            background-image: url(background-images.jpg);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        main::after {
+            position: absolute;
+            content: "";
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        main form{
+            text-align: center;
+        }
+        .wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .wrapper h1 {
+            color: #FFF;
+            font-size: 80px;
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+        }
+
+        .wrapper input {
+            border: 1px solid #FFF;
+            border-radius: 5px;
+            height: 60px;
+            line-height: 60px;
+            width: 100%;
+            padding: 0 20px;
+            font-size: 24px;
+            color: #212121;
+            outline: none !important;
+            background-color: #ffff;
+        }
+
+        .wrapper button {
+            margin: 15px auto;
+            height: 60px;
+            line-height: 60px;
+            padding: 0 30px;
+            text-align: center;
+            border: 0;
+            border-radius: 5px;
+            outline: 0 !important;
+            background-color: #FFF;
+            min-width: 132px;
+            font-size: 24px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.5s;
+        }
+        .wrapper button:hover{
+            background-color: #6B5428;
+            color: #FFF;
+        }
+        .wrapper form #result,
+        .wrapper form a{
+            color: #6B5428;
+            font-size: 24px;
+        }
+
+        @media(max-width:991px){
+            .wrapper h1{
+                font-size: 70px;
+            }
+        }
+        @media(max-width:767px){
+            .wrapper h1{
+                font-size: 60px;
+            }
+            .wrapper input,
+            .wrapper button{
+                font-size: 20px;
+                height: 40px;
+                line-height: 40px;
+            }
+        }
+        @media(max-width:576px){
+            .wrapper h1{
+                font-size: 28px;
+                line-height: 1.25;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="wrapper">
+            <form action="" onsubmit="shortenUrl(event)">
+                <h1>URL Shortener</h1>
+                <input type="text" id="urlInput" placeholder="Enter URL">
+                <button type="submit" onclick="shortenUrl()">Shorten</button>
+                <div id="result"></div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // async function shortenUrl() {
+        //     const url = document.getElementById('urlInput').value;
+        //     const apiUrl = 'https://2vymg86791.execute-api.us-east-1.amazonaws.com/prod/create?url=' + encodeURIComponent(url);
+
+        //     const response = await fetch(apiUrl);
+        //     const data = await response.json();
+
+        //     document.getElementById('result').innerHTML =
+        //         `Short URL: <a href="${data.shortUrl}">${data.shortUrl}</a>`;
+        // }
+
+
+        async function shortenUrl(event) {
+            event.preventDefault(); // Prevent form from submitting
+
+            const url = document.getElementById('urlInput').value;
+            if (!url) {
+                document.getElementById('result').innerHTML = "<span style='color: red;'>Please enter a valid URL!</span>";
+                return;
+            }
+
+            const apiUrl = 'https://api.theshortly.xyz/create?url=' + encodeURIComponent(url);
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.shortUrl) {
+                    document.getElementById('result').innerHTML =
+                        `Short URL: <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>`;
+                } else {
+                    document.getElementById('result').innerHTML = "<span style='color: red;'>Error generating short URL.</span>";
+                }
+            } catch (error) {
+                console.error("Error fetching short URL:", error);
+                document.getElementById('result').innerHTML = "<span style='color: red;'>Something went wrong. Try again later.</span>";
+            }
+        }
+    </script>
+</body>
+
+</html>
